@@ -26,7 +26,6 @@
     "fix": "gts fix",
     "serve": "webpack serve --mode=development --progress",
     "build": "webpack",
-    "build:prod": "webpack --config webpack.config.prod.js",
     "prepare": "npm.cmd run compile",
     "pretest": "npm.cmd run compile",
     "posttest": "npm.cmd run lint"

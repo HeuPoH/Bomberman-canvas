@@ -1,7 +1,34 @@
-import { Bomb } from './Bomb';
 import { isEqualPos } from './common/common';
+import { Position } from './common/types';
+import { Bomb } from './Bomb';
 import { Field } from './Field';
 import { Player } from './Player';
+
+interface PlayerInit {
+  control: PlayerControl,
+  pos: Position
+}
+
+export interface PlayerControl {
+  up: KeyboardEvent['key'],
+  right: KeyboardEvent['key'],
+  down: KeyboardEvent['key'],
+  left: KeyboardEvent['key'],
+  putBomb: KeyboardEvent['key']
+}
+
+const playersInit: PlayerInit[] = [
+  {
+    control: {
+      up: 'ArrowUp',
+      right: 'ArrowRight',
+      down: 'ArrowDown',
+      left: 'ArrowLeft',
+      putBomb: ' '
+    },
+    pos: [0, 0]
+  }
+];
 
 export class Players {
   private field: Field;
@@ -25,12 +52,13 @@ export class Players {
     return this.field.getCellSize();
   }
 
-  addPlayer(): { id: number; pos: [number, number] } {
+  addPlayer(): { id: number; pos: Position; control: PlayerControl } {
     const id = this.players.length;
-    return { pos: [0, 0], id };
+    const { pos, control } = playersInit[id];
+    return { pos, id, control };
   }
 
-  playerMoveTo(newPos: [number, number]) {
+  playerMoveTo(newPos: Position) {
     return this.field.isCellEmpty(newPos);
   }
 
@@ -59,7 +87,7 @@ export class Players {
     this.field.firedBomb(flamePos);
   }
 
-  private deleteDiedPlayers(flamePos: [number, number][]) {
+  private deleteDiedPlayers(flamePos: Position[]) {
     for (let i = 0; i < this.players.length; i++) {
       const player = this.players[i];
       const isDie = flamePos.find(pos => isEqualPos(player.getPlayerPos(), pos));

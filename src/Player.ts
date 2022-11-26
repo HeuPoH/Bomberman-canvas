@@ -1,15 +1,18 @@
-import { Players } from './Players';
+import { Position } from './common/types';
+import { PlayerControl, Players } from './Players';
 
 export class Player {
   private id: number;
-  private pos: [number, number];
+  private pos: Position;
   private players: Players;
+  private control: PlayerControl;
 
   constructor(players: Players) {
-    const { id, pos } = players.addPlayer();
+    const { id, pos, control } = players.addPlayer();
     this.id = id;
     this.pos = pos;
     this.players = players;
+    this.control = control;
 
     // to do - вынести в players
     window.addEventListener('keydown', this.onKeyDown);
@@ -34,13 +37,13 @@ export class Player {
     return this.pos;
   }
 
-  getFlamePos(): [number, number][] {
+  getFlamePos(): Position[] {
     const [column, row] = this.pos;
-    const hor: [number, number][] = [
+    const hor: Position[] = [
       [column + 1, row],
       [column - 1, row]
     ];
-    const vert: [number, number][] = [
+    const vert: Position[] = [
       [column, row + 1],
       [column, row - 1]
     ];
@@ -49,33 +52,35 @@ export class Player {
   }
 
   private onKeyDown = (e: KeyboardEvent) => {
+    const { up, right, down, left, putBomb } = this.control;
     switch (e.key) {
-      case ' ':
+      case putBomb:
         this.players.playerPutBomb(this);
         break;
-      case 'ArrowRight':
-      case 'ArrowLeft':
-      case 'ArrowDown':
-      case 'ArrowUp':
+      case up:
+      case right:
+      case down:
+      case left:
         this.moveTo(e.key);
         break;
     }
   };
 
   private moveTo(key: string) {
-    const newPos: [number, number] = this.pos.slice() as [number, number];
+    const newPos: Position = this.pos.slice() as Position;
+    const { up, right, down, left } = this.control;
 
     switch (key) {
-      case 'ArrowRight':
+      case right:
         newPos[0] += 1;
         break;
-      case 'ArrowLeft':
+      case left:
         newPos[0] -= 1;
         break;
-      case 'ArrowDown':
+      case down:
         newPos[1] += 1;
         break;
-      case 'ArrowUp':
+      case up:
         newPos[1] -= 1;
         break;
     }

@@ -26,7 +26,7 @@ export class Players {
   }
 
   addPlayer(): { id: number; pos: [number, number] } {
-    const id = this.players.length + 1;
+    const id = this.players.length;
     return { pos: [0, 0], id };
   }
 

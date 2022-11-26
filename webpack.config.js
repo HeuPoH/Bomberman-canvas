@@ -24,6 +24,7 @@ const config = {
     hot: false,
     port: 5500
   },
+  devtool: 'inline-source-map',
   module: {
     rules: [
       {

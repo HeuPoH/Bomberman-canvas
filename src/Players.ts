@@ -1,36 +1,10 @@
 import { isEqualPos } from './common/common';
-import { Position } from './common/types';
+import { PlayerControl, Position } from './common/types';
+
 import { Bomb } from './Bomb';
 import { Field } from './Field';
 import { Player } from './Player';
-
-interface PlayerInit {
-  control: PlayerControl;
-  pos: Position;
-  image: string;
-}
-
-export interface PlayerControl {
-  up: KeyboardEvent['key'];
-  right: KeyboardEvent['key'];
-  down: KeyboardEvent['key'];
-  left: KeyboardEvent['key'];
-  putBomb: KeyboardEvent['key'];
-}
-
-const playersInit: PlayerInit[] = [
-  {
-    control: {
-      up: 'ArrowUp',
-      right: 'ArrowRight',
-      down: 'ArrowDown',
-      left: 'ArrowLeft',
-      putBomb: ' '
-    },
-    image: 'green',
-    pos: [0, 0]
-  }
-];
+import { playersInit } from './settings';
 
 export class Players {
   private field: Field;
@@ -39,7 +13,11 @@ export class Players {
 
   constructor(field: Field) {
     this.field = field;
-    this.players = [new Player(this)];
+
+    for (let i = 0; i < playersInit.length; i++) {
+      const player = new Player(this);
+      this.players.push(player);
+    }
   }
 
   draw() {

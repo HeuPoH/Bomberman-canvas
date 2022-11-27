@@ -4,6 +4,7 @@ import { isEqualPos } from './common/common';
 import { imageGrass, imageStone, imageWood } from './images/images';
 import { Canvas } from './Canvas';
 import { Players } from './Players';
+import { countColumns, countRows } from './settings';
 
 interface FieldCellStatus {
   type: CellType;
@@ -22,8 +23,6 @@ enum CellSubType {
 
 export class Field {
   private canvas: Canvas;
-  private countRows = 11;
-  private countColumns = 15;
   private positions: FieldCellStatus[][] = [];
   private players: Players;
 
@@ -63,8 +62,8 @@ export class Field {
 
   getOffsets(cellSize: number = this.getCellSize()) {
     const { width, height } = this.canvas.getSize();
-    const offsetLeft = (width - cellSize * this.countColumns) / 2;
-    const offsetTop = (height - cellSize * this.countRows) / 2;
+    const offsetLeft = (width - cellSize * countColumns) / 2;
+    const offsetTop = (height - cellSize * countRows) / 2;
 
     return {
       left: offsetLeft,
@@ -97,7 +96,7 @@ export class Field {
   getCellSize() {
     const { width, height } = this.canvas.getSize();
     const size = Math.min(width, height);
-    return size / Math.max(this.countRows, this.countColumns);
+    return size / Math.max(countRows, countColumns);
   }
 
   private getCellType(column: number, row: number): CellType {
@@ -105,15 +104,15 @@ export class Field {
       [0, 0],
       [0, 1],
       [1, 0],
-      [this.countColumns - 1, 0],
-      [this.countColumns - 2, 0],
-      [this.countColumns - 1, 1],
-      [this.countColumns - 1, this.countRows - 1],
-      [this.countColumns - 1, this.countRows - 2],
-      [this.countColumns - 2, this.countRows - 1],
-      [0, this.countRows - 1],
-      [0, this.countRows - 2],
-      [1, this.countRows - 1]
+      [countColumns - 1, 0],
+      [countColumns - 2, 0],
+      [countColumns - 1, 1],
+      [countColumns - 1, countRows - 1],
+      [countColumns - 1, countRows - 2],
+      [countColumns - 2, countRows - 1],
+      [0, countRows - 1],
+      [0, countRows - 2],
+      [1, countRows - 1]
     ];
 
     if (emptyPos.find(pos => isEqualPos(pos, [column, row]))) {
@@ -161,18 +160,18 @@ export class Field {
     const cellSize = this.getCellSize();
 
     ctx?.save();
-    const fieldWidth = cellSize * this.countColumns;
-    const fieldHeight = cellSize * this.countRows;
+    const fieldWidth = cellSize * countColumns;
+    const fieldHeight = cellSize * countRows;
 
     ctx?.drawImage(imageGrass, 0, 0, fieldWidth, fieldHeight);
     ctx?.restore();
   }
 
   private prepareField() {
-    for (let i = 0; i < this.countColumns; i++) {
+    for (let i = 0; i < countColumns; i++) {
       this.positions[i] ??= [];
 
-      for (let j = 0; j < this.countRows; j++) {
+      for (let j = 0; j < countRows; j++) {
         const cellType = this.getCellType(i, j);
         this.positions[i][j] = { type: cellType };
       }

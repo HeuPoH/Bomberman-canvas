@@ -2,9 +2,12 @@
   "type": "module",
   "devDependencies": {
     "@types/node": "^14.11.2",
+    "@typescript-eslint/eslint-plugin": "^5.44.0",
+    "@typescript-eslint/parser": "^5.44.0",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.2",
+    "eslint": "^8.28.0",
     "file-loader": "^6.2.0",
     "gts": "^3.1.1",
     "html-webpack-plugin": "^5.5.0",

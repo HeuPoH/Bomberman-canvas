@@ -5,16 +5,17 @@ import { Field } from './Field';
 import { Player } from './Player';
 
 interface PlayerInit {
-  control: PlayerControl,
-  pos: Position
+  control: PlayerControl;
+  pos: Position;
+  image: string;
 }
 
 export interface PlayerControl {
-  up: KeyboardEvent['key'],
-  right: KeyboardEvent['key'],
-  down: KeyboardEvent['key'],
-  left: KeyboardEvent['key'],
-  putBomb: KeyboardEvent['key']
+  up: KeyboardEvent['key'];
+  right: KeyboardEvent['key'];
+  down: KeyboardEvent['key'];
+  left: KeyboardEvent['key'];
+  putBomb: KeyboardEvent['key'];
 }
 
 const playersInit: PlayerInit[] = [
@@ -26,6 +27,7 @@ const playersInit: PlayerInit[] = [
       left: 'ArrowLeft',
       putBomb: ' '
     },
+    image: 'green',
     pos: [0, 0]
   }
 ];
@@ -44,7 +46,7 @@ export class Players {
     const ctx = this.field.getCanvas().getContext()!;
     const bombs = Object.values(this.bombs).flat();
 
-    bombs.forEach(bomb => bomb.draw(ctx))
+    bombs.forEach(bomb => bomb.draw(ctx));
     this.players.forEach(player => player.draw(ctx));
   }
 
@@ -52,10 +54,10 @@ export class Players {
     return this.field.getCellSize();
   }
 
-  addPlayer(): { id: number; pos: Position; control: PlayerControl } {
+  addPlayer(): { id: number; pos: Position; control: PlayerControl; image: string } {
     const id = this.players.length;
-    const { pos, control } = playersInit[id];
-    return { pos, id, control };
+    const { pos, control, image } = playersInit[id];
+    return { pos, id, control, image };
   }
 
   playerMoveTo(newPos: Position) {
@@ -84,7 +86,7 @@ export class Players {
 
     this.deleteBomb(playerId, bomb);
     this.deleteDiedPlayers(flamePos);
-    this.field.firedBomb(flamePos);
+    this.field.detonationBomb(flamePos);
   }
 
   private deleteDiedPlayers(flamePos: Position[]) {

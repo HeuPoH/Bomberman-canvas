@@ -1,3 +1,4 @@
+import { Position } from './common/types';
 import { flame, imageBomb1, imageBomb2 } from './images/images';
 
 enum BombStatus {
@@ -7,16 +8,16 @@ enum BombStatus {
 }
   
 export class Bomb {
-  private pos: [number, number];
+  private pos: Position;
   private size: number;
-  private flamePos: [number, number][];
+  private flamePos: Position[];
   private startTime: number;
   private detonationBomb: (bomb: Bomb) => void;
   private duration = 3000;
 
   constructor(
-    pos: [number, number],
-    flamePos: [number, number][],
+    pos: Position,
+    flamePos: Position[],
     size: number,
     detonationBomb: (bomb: Bomb) => void
   ) {

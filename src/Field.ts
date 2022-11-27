@@ -1,5 +1,8 @@
-import { Canvas } from './Canvas';
+import { Position } from './common/types';
+import { isEqualPos } from './common/common';
+
 import { imageGrass, imageStone, imageWood } from './images/images';
+import { Canvas } from './Canvas';
 import { Players } from './Players';
 
 interface FieldCellStatus {
@@ -69,24 +72,24 @@ export class Field {
     };
   }
 
-  putBomb(pos: [number, number]) {
+  putBomb(pos: Position) {
     const [column, row] = pos;
     this.positions[column][row].subType = CellSubType.Bomb;
   }
 
-  firedBomb(positions: [number, number][]) {
+  detonationBomb(positions: Position[]) {
     positions.forEach(pos => {
       this.clearCell(pos);
       this.deleteBomb(pos);
     });
   }
 
-  private clearCell(pos: [number, number]) {
+  private clearCell(pos: Position) {
     const [column, row] = pos;
     this.positions[column][row].type = CellType.Empty;
   }
 
-  private deleteBomb(pos: [number, number]) {
+  private deleteBomb(pos: Position) {
     const [column, row] = pos;
     this.positions[column][row].subType = undefined;
   }
@@ -98,7 +101,22 @@ export class Field {
   }
 
   private getCellType(column: number, row: number): CellType {
-    if ((column <= 1 && row === 0) || (column === 0 && row <= 1)) {
+    const emptyPos: Position[] = [
+      [0, 0],
+      [0, 1],
+      [1, 0],
+      [this.countColumns - 1, 0],
+      [this.countColumns - 2, 0],
+      [this.countColumns - 1, 1],
+      [this.countColumns - 1, this.countRows - 1],
+      [this.countColumns - 1, this.countRows - 2],
+      [this.countColumns - 2, this.countRows - 1],
+      [0, this.countRows - 1],
+      [0, this.countRows - 2],
+      [1, this.countRows - 1]
+    ];
+
+    if (emptyPos.find(pos => isEqualPos(pos, [column, row]))) {
       return CellType.Empty;
     }
 
@@ -107,7 +125,7 @@ export class Field {
       : CellType.FullStatic;
   }
 
-  isCellEmpty(pos: [number, number]) {
+  isCellEmpty(pos: Position) {
     const [column, row] = pos;
     const position = this.positions[column]?.[row];
     if (position?.type !== CellType.Empty || position.subType) {
@@ -117,7 +135,7 @@ export class Field {
     return true;
   }
 
-  isCellDestroy(pos: [number, number]) {
+  isCellDestroy(pos: Position) {
     const [column, row] = pos;
     const cell = this.positions[column]?.[row];
     if (!cell) {
@@ -139,15 +157,15 @@ export class Field {
   }
 
   private drawFieldLayout() {
-    const ctx = this.canvas.getContext()!;
+    const ctx = this.canvas.getContext();
     const cellSize = this.getCellSize();
 
-    ctx.save();
+    ctx?.save();
     const fieldWidth = cellSize * this.countColumns;
     const fieldHeight = cellSize * this.countRows;
 
-    ctx.drawImage(imageGrass, 0, 0, fieldWidth, fieldHeight);
-    ctx.restore();
+    ctx?.drawImage(imageGrass, 0, 0, fieldWidth, fieldHeight);
+    ctx?.restore();
   }
 
   private prepareField() {

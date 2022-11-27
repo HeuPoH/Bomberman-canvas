@@ -1,7 +1,7 @@
 import { Position } from './common/types';
 import { isEqualPos } from './common/common';
 
-import { imageGrass, imageStone, imageWood } from './images/images';
+import { explodableBlock, grassBlock, solidBlock } from './images/images';
 import { Canvas } from './Canvas';
 import { Players } from './Players';
 import { countColumns, countRows } from './settings';
@@ -13,8 +13,8 @@ interface FieldCellStatus {
 
 enum CellType {
   Empty = 0,
-  FullStatic = 1,
-  FullDynamic = 2
+  SolidBlock = 1,
+  ExplodableBlock = 2
 }
 
 enum CellSubType {
@@ -40,11 +40,6 @@ export class Field {
     }
 
     const cellSize = this.getCellSize();
-
-    this.drawFieldLayout();
-    this.drawHorizontalsWalls();
-    this.drawVerticalsWalls();
-
     this.positions.forEach((row, i) => {
       row.forEach((cell, j) => {
         const image = this.getCellFillImage(cell.type);
@@ -58,29 +53,27 @@ export class Field {
     this.players.draw();
   }
 
-  private drawHorizontalsWalls() {
-    const ctx = this.canvas.getContext();
-    const cellSize = this.getCellSize();
-    for (let i = 0; i < countColumns; i++) {
-      ctx?.drawImage(imageStone, i * cellSize, -cellSize, cellSize, cellSize);
-      ctx?.drawImage(imageStone, i * cellSize, countRows * cellSize, cellSize, cellSize);
-    }
-  }
-
-  private drawVerticalsWalls() {
-    const ctx = this.canvas.getContext();
-    const cellSize = this.getCellSize();
-    for (let i = 0; i < countRows; i++) {
-      ctx?.drawImage(imageStone, -cellSize, i * cellSize, cellSize, cellSize);
-      ctx?.drawImage(imageStone, cellSize, countRows * cellSize, cellSize, cellSize);
-    }
-  }
-
   getCanvas() {
     return this.canvas;
   }
 
-  getOffsets(cellSize: number = this.getCellSize()) {
+  isCellEmpty(pos: Position) {
+    const [column, row] = pos;
+    const position = this.positions[column]?.[row];
+    if (position?.type !== CellType.Empty || position.subType) {
+      return false;
+    }
+
+    return true;
+  }
+
+  isCellDestroy(pos: Position) {
+    const [column, row] = pos;
+    return this.positions[column][row].type !== CellType.SolidBlock;
+  }
+
+  getOffsets() {
+    const cellSize = this.getCellSize();
     const { width, height } = this.canvas.getSize();
     const offsetLeft = (width - cellSize * countColumns) / 2;
     const offsetTop = (height - cellSize * countRows) / 2;
@@ -89,6 +82,12 @@ export class Field {
       left: offsetLeft,
       top: offsetTop
     };
+  }
+
+  getCellSize() {
+    const { width, height } = this.canvas.getSize();
+    const size = Math.min(width, height);
+    return size / Math.max(countRows, countColumns);
   }
 
   putBomb(pos: Position) {
@@ -113,78 +112,40 @@ export class Field {
     this.positions[column][row].subType = undefined;
   }
 
-  getCellSize() {
-    const { width, height } = this.canvas.getSize();
-    const size = Math.min(width, height);
-    return size / Math.max(countRows, countColumns);
-  }
-
   private getCellType(column: number, row: number): CellType {
     const emptyPos: Position[] = [
-      [0, 0],
-      [0, 1],
-      [1, 0],
-      [countColumns - 1, 0],
-      [countColumns - 2, 0],
-      [countColumns - 1, 1],
-      [countColumns - 1, countRows - 1],
-      [countColumns - 1, countRows - 2],
-      [countColumns - 2, countRows - 1],
-      [0, countRows - 1],
-      [0, countRows - 2],
-      [1, countRows - 1]
+      [1, 1],
+      [1, 2],
+      [2, 1],
+      [countColumns - 2, 1],
+      [countColumns - 3, 1],
+      [countColumns - 2, 2],
+      [countColumns - 2, countRows - 2],
+      [countColumns - 2, countRows - 3],
+      [countColumns - 3, countRows - 2],
+      [1, countRows - 2],
+      [1, countRows - 3],
+      [2, countRows - 2]
     ];
 
     if (emptyPos.find(pos => isEqualPos(pos, [column, row]))) {
       return CellType.Empty;
     }
 
-    return Math.round(column % 2) === 0 || Math.round(row % 2) === 0
-      ? CellType.FullDynamic
-      : CellType.FullStatic;
-  }
-
-  isCellEmpty(pos: Position) {
-    const [column, row] = pos;
-    const position = this.positions[column]?.[row];
-    if (position?.type !== CellType.Empty || position.subType) {
-      return false;
-    }
-
-    return true;
-  }
-
-  isCellDestroy(pos: Position) {
-    const [column, row] = pos;
-    const cell = this.positions[column]?.[row];
-    if (!cell) {
-      return false;
-    }
-
-    return this.positions[column][row].type !== CellType.FullStatic;
+    return Math.round((column - 1) % 2) === 0 || Math.round((row - 1) % 2) === 0
+      ? CellType.ExplodableBlock
+      : CellType.SolidBlock;
   }
 
   private getCellFillImage(type: CellType) {
     switch (type) {
-      case CellType.FullStatic:
-        return imageStone;
-      case CellType.FullDynamic:
-        return imageWood;
+      case CellType.SolidBlock:
+        return solidBlock;
+      case CellType.ExplodableBlock:
+        return explodableBlock;
       default:
-        return imageGrass;
+        return grassBlock;
     }
-  }
-
-  private drawFieldLayout() {
-    const ctx = this.canvas.getContext();
-    const cellSize = this.getCellSize();
-
-    ctx?.save();
-    const fieldWidth = cellSize * countColumns;
-    const fieldHeight = cellSize * countRows;
-
-    ctx?.drawImage(imageGrass, 0, 0, fieldWidth, fieldHeight);
-    ctx?.restore();
   }
 
   private prepareField() {
@@ -192,6 +153,11 @@ export class Field {
       this.positions[i] ??= [];
 
       for (let j = 0; j < countRows; j++) {
+        if (i === 0 || i === countColumns - 1 || j === 0 || j === countRows - 1) {
+          this.positions[i][j] = { type: CellType.SolidBlock };
+          continue;
+        }
+
         const cellType = this.getCellType(i, j);
         this.positions[i][j] = { type: cellType };
       }

@@ -1,7 +1,7 @@
 import { PlayerInit } from './common/types';
 
-export const countRows = 11;
-export const countColumns = 15;
+export const countRows = 15;
+export const countColumns = 19;
 
 export const playersInit: PlayerInit[] = [
   {
@@ -12,8 +12,8 @@ export const playersInit: PlayerInit[] = [
       left: 'ArrowLeft',
       putBomb: 'Space'
     },
-    image: 'green',
-    pos: [0, 0]
+    image: 'yellow',
+    pos: [1, 1]
   },
   {
     control: {
@@ -24,6 +24,6 @@ export const playersInit: PlayerInit[] = [
       putBomb: 'KeyE'
     },
     image: 'red',
-    pos: [countColumns - 1, countRows - 1]
+    pos: [countColumns - 2, countRows - 2]
   }
 ];

@@ -42,7 +42,9 @@ export class Field {
     const cellSize = this.getCellSize();
 
     this.drawFieldLayout();
-    
+    this.drawHorizontalsWalls();
+    this.drawVerticalsWalls();
+
     this.positions.forEach((row, i) => {
       row.forEach((cell, j) => {
         const image = this.getCellFillImage(cell.type);
@@ -54,6 +56,24 @@ export class Field {
     });
 
     this.players.draw();
+  }
+
+  private drawHorizontalsWalls() {
+    const ctx = this.canvas.getContext();
+    const cellSize = this.getCellSize();
+    for (let i = 0; i < countColumns; i++) {
+      ctx?.drawImage(imageStone, i * cellSize, -cellSize, cellSize, cellSize);
+      ctx?.drawImage(imageStone, i * cellSize, countRows * cellSize, cellSize, cellSize);
+    }
+  }
+
+  private drawVerticalsWalls() {
+    const ctx = this.canvas.getContext();
+    const cellSize = this.getCellSize();
+    for (let i = 0; i < countRows; i++) {
+      ctx?.drawImage(imageStone, -cellSize, i * cellSize, cellSize, cellSize);
+      ctx?.drawImage(imageStone, cellSize, countRows * cellSize, cellSize, cellSize);
+    }
   }
 
   getCanvas() {

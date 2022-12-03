@@ -52,17 +52,17 @@ export class Players {
 
     const pos = player.getPlayerPos();
     const flamePos = player.getFlamePos().filter(pos => this.field.isCellDestroy(pos));
-    const bomb = new Bomb(pos, flamePos, this.getCellSize(), bomb => this.detonationBomb(playerId, bomb));
+    const bomb = new Bomb(pos, flamePos, this.getCellSize(), (bomb, isDelete) => this.detonationBomb(playerId, bomb, isDelete));
 
     this.bombs[playerId].push(bomb);
 
     this.field.putBomb(pos);
   }
 
-  detonationBomb(playerId: number, bomb: Bomb) {
+  detonationBomb(playerId: number, bomb: Bomb, isDeleteBomb?: boolean) {
     const flamePos = bomb.getFlamePos();
 
-    this.deleteBomb(playerId, bomb);
+    isDeleteBomb && this.deleteBomb(playerId, bomb);
     this.deleteDiedPlayers(flamePos);
     this.field.detonationBomb(flamePos);
   }

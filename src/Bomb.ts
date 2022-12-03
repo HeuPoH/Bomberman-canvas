@@ -12,14 +12,14 @@ export class Bomb {
   private size: number;
   private flamePos: Position[];
   private startTime: number;
-  private detonationBomb: (bomb: Bomb) => void;
+  private detonationBomb: (bomb: Bomb, deleteBomb?: boolean) => void;
   private duration = 3000;
 
   constructor(
     pos: Position,
     flamePos: Position[],
     size: number,
-    detonationBomb: (bomb: Bomb) => void
+    detonationBomb: (bomb: Bomb, deleteBomb?: boolean) => void
   ) {
     this.pos = pos;
     this.size = size;
@@ -43,8 +43,9 @@ export class Bomb {
     this.drawBomb(ctx, this.size, bombStatus);
     this.drawFlamePos(ctx, this.size, bombStatus);
 
-    if (timeFraction >= 1) {
-      this.detonationBomb(this);
+    if (bombStatus === BombStatus.Fired) {
+      const isDeleteBomb = timeFraction >= 1;
+      this.detonationBomb(this, isDeleteBomb);
     }
   }
 

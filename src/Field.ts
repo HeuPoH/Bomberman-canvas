@@ -87,7 +87,8 @@ export class Field {
   getCellSize() {
     const { width, height } = this.canvas.getSize();
     const size = Math.min(width, height);
-    return size / Math.max(countRows, countColumns);
+    const items = size === width ? countColumns : countRows;
+    return size / items;
   }
 
   putBomb(pos: Position) {

@@ -22,11 +22,12 @@ export class Player {
 
   draw(ctx: CanvasRenderingContext2D) {
     const cellSize = this.players.getCellSize();
+    const playerSize = cellSize * 0.7;
     const x = cellSize * this.pos[0] + cellSize / 2;
     const y = cellSize * this.pos[1] + cellSize / 2;
 
     ctx.fillStyle = this.image;
-    ctx.arc(x, y, cellSize / 2, 0, Math.PI * 2);
+    ctx.arc(x, y, playerSize / 2, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
   }

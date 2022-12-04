@@ -60,7 +60,9 @@ export class Bomb {
 
     const [column, row] = this.pos;
     const image = this.getImage(status);
-    ctx.drawImage(image, column * size, row * size, size, size);
+    const sizeBomb = size * 0.8;
+    const offset = (size - sizeBomb) / 2;
+    ctx.drawImage(image, column * size + offset, row * size + offset, sizeBomb, sizeBomb);
   }
 
   private drawFlamePos(

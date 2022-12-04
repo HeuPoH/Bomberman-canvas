@@ -76,6 +76,7 @@ export class Players {
         continue;
       }
 
+      player.removeListener();
       this.players.splice(player.getId(), 1);
     }
   }

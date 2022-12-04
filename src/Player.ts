@@ -54,6 +54,10 @@ export class Player {
     return [...hor, ...vert];
   }
 
+  removeListener() {
+    window.removeEventListener('keydown', this.onKeyDown);
+  }
+
   private onKeyDown = (e: KeyboardEvent) => {
     const { up, right, down, left, putBomb } = this.control;
     switch (e.code) {
